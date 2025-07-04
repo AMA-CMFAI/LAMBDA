@@ -8,11 +8,9 @@ experiments/
 exported/
 function_calling/
 MNIST/
-utils/
 others/
 test/
 example_config.yaml
 local.yaml
 front_end/css.css
 front_end/javascript.js
-

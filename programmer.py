@@ -2,6 +2,7 @@ import openai
 from prompt_engineering.prompts import PROGRAMMER_PROMPT
 from knw_in import retrieval_knowledge
 import os
+import traceback
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 
@@ -75,6 +76,7 @@ class Programmer:
                     yield chunk_message
         except Exception as e:
             print(f"Error calling chat model: {e}")
+            traceback.print_exc()
             return None
     def clear(self):
         self.messages = [

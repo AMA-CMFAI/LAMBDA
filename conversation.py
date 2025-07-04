@@ -27,8 +27,7 @@ class Conversation():
         self.inspector = Inspector(api_key=config['api_key'], model=config['inspector_model'],
                                    base_url=config['base_url_inspector'])
         self.session_cache_path = config["session_cache_path"]
-        self.messages = []
-        self.chat_history = []
+        self.chat_history_display = []
         self.retrieval = self.config['retrieval']
         self.kernel = CodeKernel(session_cache_path=self.session_cache_path, max_exe_time=config['max_exe_time'])
         self.max_attempts = config['max_attempts']
@@ -111,10 +110,10 @@ class Conversation():
     def show_data(self) -> pd.DataFrame:
         return self.my_data_cache.data
 
-    def document_generation(self):
+    def document_generation(self, chat_history):
         print("Report generating...")
         formatted_chat = []
-        for item in self.chat_history:
+        for item in chat_history:
             formatted_chat.append({"role": "user", "content": item[0]})
             formatted_chat.append({"role": "assistant", "content": item[1]})
         report_pmt = Academic_Report.replace('s{figures}',
@@ -160,75 +159,75 @@ class Conversation():
         self.kernel = CodeKernel(session_cache_path=self.session_cache_path, max_exe_time=self.config['max_exe_time'])
         self.my_data_cache = None
 
-    def stream_workflow(self, chat_history, code=None) -> object:
+    def stream_workflow(self, chat_history_display, code=None) -> object:
         try:
-            chat_history[-1][1] = ""
+            chat_history_display[-1][1] = ""
+            yield chat_history_display
             if code is not None:
-                prog_response1_content = HUMAN_LOOP.format(code=code)
-                self.add_programmer_msg({"role": "user", "content": prog_response1_content})
+                prog_response = HUMAN_LOOP.format(code=code)
+                self.add_programmer_msg({"role": "user", "content": prog_response})
             else:
-                prog_response1_content = ''
+                prog_response = ''
                 for message in self.programmer._call_chat_model_streaming(retrieval=self.retrieval, kernel=self.kernel):
-                    chat_history[-1][1] += message
-                    prog_response1_content += message
-                    yield chat_history
-                self.add_programmer_msg({"role": "assistant", "content": prog_response1_content})
+                    chat_history_display[-1][1] += message
+                    yield chat_history_display
+                    prog_response += message
+                self.add_programmer_msg({"role": "assistant", "content": prog_response})
 
-            is_python, code = extract_code(prog_response1_content)
+            is_python, code = extract_code(prog_response)
             print("is_python:", is_python)
 
             if is_python:
-                chat_history[-1][1] += '\n🖥️ Execute code...'
-                yield chat_history
+                chat_history_display[-1][1] += '\n🖥️ Execute code...'
+                yield chat_history_display
                 sign, msg_llm, exe_res = self.run_code(code)
                 print("Executing result:", exe_res)
                 if sign and 'error' not in sign:
                     display, link_info = self.check_folder()
-                    chat_history[-1][1] += display_exe_results(exe_res)
-                    yield chat_history
+                    chat_history_display[-1][1] += display_exe_results(exe_res)
+                    yield chat_history_display
                     self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
 
-                    prog_response2 = ''
+                    prog_response = ''
                     for message in self.programmer._call_chat_model_streaming():
-                        chat_history[-1][1] += message
-                        prog_response2 += message
-                        yield chat_history
+                        chat_history_display[-1][1] += message
+                        yield chat_history_display
+                        prog_response += message
 
-                    self.add_programmer_msg({"role": "assistant", "content": prog_response2})
-                    chat_history[-1][1] += f"{link_info}" if display else ''
-                    yield chat_history
+                    self.add_programmer_msg({"role": "assistant", "content": prog_response})
+                    chat_history_display[-1][1] += f"{link_info}" if display else ''
+                    yield chat_history_display
 
-                    #show suggestion
-                    suggests = extract_suggestion(prog_response2)
+                    # show suggestion
+                    suggests = extract_suggestion(prog_response)
                     if suggests:
-                        suggestions = display_suggestions(suggests)
-                        chat_history[-1][1] += suggestions
-                        yield chat_history
+                        suggestions = suggestion_html(suggests)
+                        format_suggestion(chat_history_display, suggestions)
+                        yield chat_history_display
 
                 else:
                     self.error_count += 1
                     round = 0
                     while 'error' in sign and round < self.max_attempts:
-                        chat_history[-1][1] = f'⭕ Execution error, try to repair the code, attempts: {round + 1}....\n'
-                        yield chat_history
+                        chat_history_display[-1][1] = f'⭕ Execution error, try to repair the code, attempts: {round + 1}....\n'
+                        yield chat_history_display
                         self.add_inspector_msg(code, msg_llm)
                         if round == 3:
-                            insp_response1_content = "Try other packages or methods."
+                            insp_response = "Try other packages or methods."
                         else:
-                            insp_response1 = self.inspector._call_chat_model()
-                            insp_response1_content = insp_response1.choices[0].message.content
-                        self.inspector.messages.append({"role": "assistant", "content": insp_response1_content})
+                            insp_response = self.inspector._call_chat_model().choices[0].message.content
+                        self.inspector.messages.append({"role": "assistant", "content": insp_response})
 
-                        self.add_programmer_repair_msg(code, msg_llm, insp_response1_content)
-                        prog_response1_content = ''
+                        self.add_programmer_repair_msg(code, msg_llm, insp_response)
+                        prog_response = ''
                         for message in self.programmer._call_chat_model_streaming():
-                            chat_history[-1][1] += message
-                            prog_response1_content += message
-                            yield chat_history
-                        chat_history[-1][1] += '\n🖥️ Execute code...\n'
-                        yield chat_history
-                        self.add_programmer_msg({"role": "assistant", "content": prog_response1_content})
-                        is_python, code = extract_code(prog_response1_content)
+                            chat_history_display[-1][1] += message
+                            prog_response += message
+                            yield chat_history_display
+                        chat_history_display[-1][1] += '\n🖥️ Execute code...\n'
+                        yield chat_history_display
+                        self.add_programmer_msg({"role": "assistant", "content": prog_response})
+                        is_python, code = extract_code(prog_response)
                         if is_python:
                             sign, msg_llm, exe_res = self.run_code(code)
                             if sign and 'error' not in sign:
@@ -236,32 +235,32 @@ class Conversation():
                                 break
                         round += 1
                     if round == self.max_attempts:
-                        return prog_response1_content + "\nSorry, I can't fix the code, can you help me to modified it or give some suggestions?"
+                        return prog_response + "\nSorry, I can't fix the code, can you help me to modified it or give some suggestions?"
 
                     display, link_info = self.check_folder()
                     print("Executing results:", exe_res)
-                    chat_history[-1][1] += display_exe_results(exe_res)
-                    yield chat_history
+                    chat_history_display[-1][1] += display_exe_results(exe_res)
+                    yield chat_history_display
                     self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
-                    prog_response2 = ''
+                    prog_response = ''
                     for message in self.programmer._call_chat_model_streaming():
-                        chat_history[-1][1] += message
-                        prog_response2 += message
-                        yield chat_history
+                        chat_history_display[-1][1] += message
+                        yield chat_history_display
+                        prog_response += message
 
-                    self.add_programmer_msg({"role": "assistant", "content": prog_response2})
-                    chat_history[-1][1] += f"{link_info}" if display else ''
-                    yield chat_history
+                    self.add_programmer_msg({"role": "assistant", "content": prog_response})
+                    chat_history_display[-1][1] += f"{link_info}" if display else ''
+                    yield chat_history_display
             # else:
-            #     chat_history[-1][1] += "\nNo code detected or code is not python code."  # todo : delete printing this?
-            #     yield chat_history
+            #     chat_history_display[-1][1] += "\nNo code detected or code is not python code."  # todo : delete printing this?
+            #     yield chat_history_display
             #     final_response = prog_response1_content + "\nNo code detected or code is not python code."
             #     if self.programmer.messages[-1]["role"] == "assistant":
             #         self.programmer.messages[-1]["content"] = final_response
 
         except Exception as e:
-            chat_history[-1][1] += "\nSorry, there is an error in the program, please try again."
-            yield chat_history
+            chat_history_display[-1][1] += "\nSorry, there is an error in the program, please try again."
+            yield chat_history_display
             print(f"An error occurred: {e}")
             traceback.print_exc()
             if self.programmer.messages[-1]["role"] == "user":

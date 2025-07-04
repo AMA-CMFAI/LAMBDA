@@ -59,8 +59,8 @@ class app():
     def rendering_code(self):
         return self.conv.rendering_code()
 
-    def generate_report(self):
-        down_path = self.conv.document_generation()
+    def generate_report(self, chat_history):
+        down_path = self.conv.document_generation(chat_history)
         return [gr.Button(visible=False), gr.DownloadButton(label=f"Download Report", value=down_path, visible=True)]
 
     def export_code(self):
@@ -82,16 +82,16 @@ class app():
 
     def save_dialogue(self, chat_history):
         self.conv.save_conv()
-        with open(os.path.join(self.session_cache_path, 'system_dialogue.json'), 'w') as f:
+        with open(os.path.join(self.session_cache_path, 'test_system_dialogue.json'), 'w') as f:
             json.dump(chat_history, f, indent=4)
             f.close()
-        print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'system_dialogue.json')}.")
+        print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'test_system_dialogue.json')}.")
 
     def load_dialogue(self, json_file):
         with open(json_file, 'r') as f:
             chat_history = json.load(f)
             f.close()
-        self.conv.chat_history = chat_history
+        self.conv.chat_history_display = chat_history
         return chat_history
 
     def clear_all(self, message, chat_history):
@@ -101,7 +101,9 @@ class app():
 my_app = app()
 
 with gr.Blocks(theme=gr.themes.Soft(), css=css, js=js) as demo:
-    chatbot = gr.Chatbot(value=my_app.conv.chat_history, height=600, label="LAMBDA", show_copy_button=True)
+    # history = my_app.load_dialogue(
+    #     "/Users/stephensun/Desktop/LAMBDA_code/LAMBDA_BAK/cache/conv_cache/ml_data_regression/airfoil/test_system_dialogue.json")
+    chatbot = gr.Chatbot(value=my_app.conv.chat_history_display, height=600, label="LAMBDA", show_copy_button=True)
     with gr.Group():
         with gr.Row():
             upload_btn = gr.UploadButton(label="Upload Data", file_types=["csv", "xlsx"], scale=1)
@@ -137,7 +139,7 @@ with gr.Blocks(theme=gr.themes.Soft(), css=css, js=js) as demo:
     edit.click(my_app.rendering_code, inputs=None, outputs=code)
     export_notebook.click(my_app.export_code, inputs=None, outputs=[export_notebook, down_notebook])
     down_notebook.click(my_app.down_notebook, inputs=None, outputs=[export_notebook, down_notebook])
-    generate_report.click(my_app.generate_report, inputs=None, outputs=[generate_report, down_report])
+    generate_report.click(my_app.generate_report, inputs=[chatbot], outputs=[generate_report, down_report])
     down_report.click(my_app.down_report, inputs=None, outputs=[generate_report, down_report])
     save.click(my_app.save_dialogue, inputs=chatbot)
     clear.click(fn=my_app.clear_all, inputs=[msg, chatbot], outputs=[msg, chatbot])

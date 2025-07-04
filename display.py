@@ -16,7 +16,7 @@ def display_exe_results(text):
 def display_download_file(path, filename):
     return f"""<div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px;"><a href=\"file={path}\" download style="font-weight: bold; color: #007bff;">Download {filename}</a></div>"""
 
-def display_suggestions(suggestions: list) -> str:
+def suggestion_html(suggestions: list) -> str:
     buttons_html = ""
     for suggestion in suggestions:
         buttons_html += f"""<button class='suggestion-btn'>{suggestion}</button>"""
