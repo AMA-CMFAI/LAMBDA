@@ -98,10 +98,12 @@ The performance of LAMBDA in solving data science problems is demonstrated in se
 - [2025-02-26] Remove the cloud cache module for easier use. Code refactoring.
 
 ## Planning works
-- [High] Replace Gradio UI with OpenWebUI.
-- [High] Refactor the Knowledge Integration and Knowledge base module by ChromaDB.
-- [High] Add a Docker image for easier use.
-- Documentation writing.
+- [ ] Create a Logger for log.
+- [ ] Pre-installation of popular packages in the kernel.
+- [ ] Replace Gradio UI with OpenWebUI.
+- [ ] Refactor the Knowledge Integration and Knowledge base module by ChromaDB.
+- [ ] Add a Docker image for easier use.
+- [x] Docsite.
 
 
 
