@@ -9,7 +9,6 @@ import warnings
 import traceback
 import zipfile
 from kernel import *
-from lambda_utils import *
 from display import *
 from pathlib import Path
 from utils.utils import *
@@ -183,11 +182,13 @@ class Conversation():
                 sign, msg_llm, exe_res = self.run_code(code)
                 print("Executing result:", exe_res)
                 if sign and 'error' not in sign:
-                    display, link_info = self.check_folder()
                     chat_history_display[-1][1] += display_exe_results(exe_res)
                     yield chat_history_display
-                    self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
+                    display, link_info = self.check_folder()
+                    chat_history_display[-1][1] += f"{link_info}" if display else ''
+                    yield chat_history_display
 
+                    self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
                     prog_response = ''
                     for message in self.programmer._call_chat_model_streaming():
                         chat_history_display[-1][1] += message
@@ -195,15 +196,15 @@ class Conversation():
                         prog_response += message
 
                     self.add_programmer_msg({"role": "assistant", "content": prog_response})
-                    chat_history_display[-1][1] += f"{link_info}" if display else ''
-                    yield chat_history_display
 
                     # show suggestion
-                    suggests = extract_suggestion(prog_response)
-                    if suggests:
-                        suggestions = suggestion_html(suggests)
-                        format_suggestion(chat_history_display, suggestions)
-                        yield chat_history_display
+                    chat_history_display[-1][1] = display_suggestions(prog_response,  chat_history_display[-1][1])
+                    yield chat_history_display
+                    # suggests_list = extract_suggestion(prog_response)
+                    # if suggests_list:
+                    #     suggestions = suggestion_html(suggests_list)
+                    #     format_suggestion(chat_history_display, suggests_list, suggestions)
+                    #     yield chat_history_display
 
                 else:
                     self.error_count += 1
@@ -237,9 +238,11 @@ class Conversation():
                     if round == self.max_attempts:
                         return prog_response + "\nSorry, I can't fix the code, can you help me to modified it or give some suggestions?"
 
-                    display, link_info = self.check_folder()
                     print("Executing results:", exe_res)
                     chat_history_display[-1][1] += display_exe_results(exe_res)
+                    yield chat_history_display
+                    display, link_info = self.check_folder()
+                    chat_history_display[-1][1] += f"{link_info}" if display else ''
                     yield chat_history_display
                     self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
                     prog_response = ''
@@ -249,14 +252,8 @@ class Conversation():
                         prog_response += message
 
                     self.add_programmer_msg({"role": "assistant", "content": prog_response})
-                    chat_history_display[-1][1] += f"{link_info}" if display else ''
+                    chat_history_display[-1][1] = display_suggestions(prog_response, chat_history_display[-1][1])
                     yield chat_history_display
-            # else:
-            #     chat_history_display[-1][1] += "\nNo code detected or code is not python code."  # todo : delete printing this?
-            #     yield chat_history_display
-            #     final_response = prog_response1_content + "\nNo code detected or code is not python code."
-            #     if self.programmer.messages[-1]["role"] == "assistant":
-            #         self.programmer.messages[-1]["content"] = final_response
 
         except Exception as e:
             chat_history_display[-1][1] += "\nSorry, there is an error in the program, please try again."
@@ -266,26 +263,5 @@ class Conversation():
             if self.programmer.messages[-1]["role"] == "user":
                 self.programmer.messages.append({"role": "assistant", "content": f"An error occurred in program: {e}"})
 
-
-
-
-# function_lib = {
-#
-# }
-
-
-def yeild_content_inloop(content):
-    for chunk in content:
-        yield chunk
-
-
-def remove_code_blocks(text):
-    pattern = r'(```.*?```)'
-
-    text = re.sub(pattern, '', text, flags=re.DOTALL)
-
-    text = text.replace("Execution result:", '')
-
-    return text
 
 

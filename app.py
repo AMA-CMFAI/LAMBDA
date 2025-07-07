@@ -11,12 +11,13 @@ from prompt_engineering.prompts import *
 import yaml
 from front_end.js import js
 from front_end.css import css
+from utils.utils import *
 
 class app():
     def __init__(self, config_path='config.yaml'):
         print("Load config: ", config_path)
         self.config = yaml.load(open(config_path, 'r'), Loader=yaml.FullLoader)
-        self.session_cache_path = self.init_local_cache_path(self.config["project_cache_path"])
+        self.session_cache_path = to_absolute_path(self.init_local_cache_path(self.config["project_cache_path"]))
         print("Session cache path: ", self.session_cache_path)
         self.config["session_cache_path"] = self.session_cache_path
         self.conv = Conversation(self.config)
@@ -101,8 +102,6 @@ class app():
 my_app = app()
 
 with gr.Blocks(theme=gr.themes.Soft(), css=css, js=js) as demo:
-    # history = my_app.load_dialogue(
-    #     "/Users/stephensun/Desktop/LAMBDA_code/LAMBDA_BAK/cache/conv_cache/ml_data_regression/airfoil/test_system_dialogue.json")
     chatbot = gr.Chatbot(value=my_app.conv.chat_history_display, height=600, label="LAMBDA", show_copy_button=True)
     with gr.Group():
         with gr.Row():
