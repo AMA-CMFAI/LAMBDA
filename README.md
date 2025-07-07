@@ -35,7 +35,7 @@ git clone https://github.com/AMA-CMFAI/LAMBDA.git
 cd LAMBDA
 ```
 
-Then, we recommend creating a [Conda](https://docs.conda.io/en/latest/) environment for this project and install the dependencies by following commands:
+Then, we recommend creating a [Conda](https://docs.conda.io/en/latest/) environment for this project and installing the dependencies by following the commands:
 ```bash
 conda create -n lambda python=3.10
 conda activate lambda
@@ -94,10 +94,8 @@ The performance of LAMBDA in solving data science problems is demonstrated in se
 - **[Integrating Human Intelligence](https://www.polyu.edu.hk/ama/cmfai/files/lambda/knw.mp4)**
 - **[Education](https://www.polyu.edu.hk/ama/cmfai/files/lambda/LAMBDA_education.mp4)**
 
-## Updating History
-- [2025-02-26] Remove the cloud cache module for easier use. Code refactoring.
 
-## Planning works
+## Planning Works
 - [ ] Create a Logger for log.
 - [ ] Pre-installation of popular packages in the kernel.
 - [ ] Replace Gradio UI with OpenWebUI.
@@ -105,6 +103,9 @@ The performance of LAMBDA in solving data science problems is demonstrated in se
 - [ ] Add a Docker image for easier use.
 - [x] Docsite.
 
+
+## Updating History
+See [Docs site](https://ama-cmfai.github.io/LAMBDA-Docs/#/).
 
 
 ## Related Works
