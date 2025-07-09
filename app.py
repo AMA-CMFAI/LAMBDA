@@ -83,10 +83,10 @@ class app():
 
     def save_dialogue(self, chat_history):
         self.conv.save_conv()
-        with open(os.path.join(self.session_cache_path, 'test_system_dialogue.json'), 'w') as f:
+        with open(os.path.join(self.session_cache_path, 'system_dialogue.json'), 'w') as f:
             json.dump(chat_history, f, indent=4)
             f.close()
-        print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'test_system_dialogue.json')}.")
+        print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'system_dialogue.json')}.")
 
     def load_dialogue(self, json_file):
         with open(json_file, 'r') as f:
@@ -147,4 +147,4 @@ with gr.Blocks(theme=gr.themes.Soft(), css=css, js=js) as demo:
 if __name__ == '__main__':
     config = yaml.load(open('config.yaml', 'r'), Loader=yaml.FullLoader)
     session_cache_path = config["project_cache_path"]
-    demo.launch(server_name="0.0.0.0", server_port=8000, allowed_paths=[session_cache_path], share=True)
+    demo.launch(server_name="0.0.0.0", server_port=8002, allowed_paths=[session_cache_path], share=True)
