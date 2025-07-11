@@ -98,7 +98,7 @@ class app():
         return "", []
 
 def launch_app():
-    my_app = app(config_path='local.yaml')
+    my_app = app(config_path='config.yaml')
     with gr.Blocks(theme=gr.themes.Soft(), css=css, js=js) as demo:
         chatbot = gr.Chatbot(value=my_app.conv.chat_history_display, height=600, label="LAMBDA", show_copy_button=True)
         with gr.Group():
