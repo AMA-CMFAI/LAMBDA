@@ -158,6 +158,7 @@ class Conversation():
         self.kernel = CodeKernel(session_cache_path=self.session_cache_path, max_exe_time=self.config['max_exe_time'])
         self.my_data_cache = None
 
+
     def stream_workflow(self, chat_history_display, code=None) -> object:
         try:
             chat_history_display[-1][1] = ""
@@ -182,30 +183,7 @@ class Conversation():
                 sign, msg_llm, exe_res = self.run_code(code)
                 print("Executing result:", exe_res)
                 if sign and 'error' not in sign:
-                    chat_history_display[-1][1] += display_exe_results(exe_res)
-                    yield chat_history_display
-                    display, link_info = self.check_folder()
-                    chat_history_display[-1][1] += f"{link_info}" if display else ''
-                    yield chat_history_display
-
-                    self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
-                    prog_response = ''
-                    for message in self.programmer._call_chat_model_streaming():
-                        chat_history_display[-1][1] += message
-                        yield chat_history_display
-                        prog_response += message
-
-                    self.add_programmer_msg({"role": "assistant", "content": prog_response})
-
-                    # show suggestion
-                    chat_history_display[-1][1] = display_suggestions(prog_response,  chat_history_display[-1][1])
-                    yield chat_history_display
-                    # suggests_list = extract_suggestion(prog_response)
-                    # if suggests_list:
-                    #     suggestions = suggestion_html(suggests_list)
-                    #     format_suggestion(chat_history_display, suggests_list, suggestions)
-                    #     yield chat_history_display
-
+                    yield from self._handle_execution_result(exe_res, msg_llm, chat_history_display)
                 else:
                     self.error_count += 1
                     round = 0
@@ -235,25 +213,11 @@ class Conversation():
                                 self.repair_count += 1
                                 break
                         round += 1
+
                     if round == self.max_attempts:
-                        return prog_response + "\nSorry, I can't fix the code, can you help me to modified it or give some suggestions?"
+                        return prog_response + f"\nSorry, I can't fix the code with {self.max_attempts} attempts, can you help me to modified it or give some suggestions?"
 
-                    print("Executing results:", exe_res)
-                    chat_history_display[-1][1] += display_exe_results(exe_res)
-                    yield chat_history_display
-                    display, link_info = self.check_folder()
-                    chat_history_display[-1][1] += f"{link_info}" if display else ''
-                    yield chat_history_display
-                    self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
-                    prog_response = ''
-                    for message in self.programmer._call_chat_model_streaming():
-                        chat_history_display[-1][1] += message
-                        yield chat_history_display
-                        prog_response += message
-
-                    self.add_programmer_msg({"role": "assistant", "content": prog_response})
-                    chat_history_display[-1][1] = display_suggestions(prog_response, chat_history_display[-1][1])
-                    yield chat_history_display
+                    yield from self._handle_execution_result(exe_res, msg_llm, chat_history_display)
 
         except Exception as e:
             chat_history_display[-1][1] += "\nSorry, there is an error in the program, please try again."
@@ -263,5 +227,21 @@ class Conversation():
             if self.programmer.messages[-1]["role"] == "user":
                 self.programmer.messages.append({"role": "assistant", "content": f"An error occurred in program: {e}"})
 
+    def _handle_execution_result(self, exe_res, msg_llm, chat_history_display):
+        chat_history_display[-1][1] += display_exe_results(exe_res)
+        yield chat_history_display
 
+        display, link_info = self.check_folder()
+        chat_history_display[-1][1] += f"{link_info}" if display else ''
+        yield chat_history_display
 
+        self.add_programmer_msg({"role": "user", "content": RESULT_PROMPT.format(msg_llm)})
+        prog_response = ''
+        for message in self.programmer._call_chat_model_streaming():
+            chat_history_display[-1][1] += message
+            yield chat_history_display
+            prog_response += message
+
+        self.add_programmer_msg({"role": "assistant", "content": prog_response})
+        chat_history_display[-1][1] = display_suggestions(prog_response, chat_history_display[-1][1])
+        yield chat_history_display
