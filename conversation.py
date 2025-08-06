@@ -15,7 +15,7 @@ from utils.utils import *
 # warnings.filterwarnings("ignore")
 
 
-class Conversation():
+class Conversation:
 
     def __init__(self, config) -> None:
         self.config = config
@@ -107,6 +107,9 @@ class Conversation():
         return None
 
     def show_data(self) -> pd.DataFrame:
+        if self.my_data_cache is None:
+            print("User do not upload a data.")
+            return pd.DataFrame()
         return self.my_data_cache.data
 
     def document_generation(self, chat_history):
