@@ -85,7 +85,7 @@ retrieval : False # Whether to start a knowledge retrieval. If you don't create 
 
 Finally, run the following command to start the LAMBDA with GUI:
 ```bash
-python app.py
+python lambda_app.py
 ```
 
 
