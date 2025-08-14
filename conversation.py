@@ -26,14 +26,14 @@ class Conversation:
         self.inspector = Inspector(api_key=config['api_key'], model=config['inspector_model'],
                                    base_url=config['base_url_inspector'])
         self.session_cache_path = config["session_cache_path"]
-        self.chat_history_display = []
+        self.chat_history_display = config["chat_history_display"] if "chat_history_display" in config else []
         self.retrieval = self.config['retrieval']
         self.kernel = CodeKernel(session_cache_path=self.session_cache_path, max_exe_time=config['max_exe_time'])
         self.max_attempts = config['max_attempts']
         self.error_count = 0
         self.repair_count = 0
         self.file_list = []
-        self.figure_list = []
+        self.figure_list = config["figure_list"] if "figure_list" in config else []
         self.function_repository = {}
         self.my_data_cache = None
         # self.oss_dir = None
@@ -67,15 +67,32 @@ class Conversation:
         print("display_link:", display_link)
         return display, display_link
 
+
     def save_conv(self):
         with open(os.path.join(self.session_cache_path, 'programmer_msg.json'), 'w') as f:
             json.dump(self.programmer.messages, f, indent=4)
             f.close()
+        print(f"Conversation saved in {os.path.join(self.session_cache_path, 'programmer_msg.json')}")
         with open(os.path.join(self.session_cache_path, 'inspector_msg.json'), 'w') as f:
             json.dump(self.inspector.messages, f, indent=4)
             f.close()
-        print(f"Conversation saved in {os.path.join(self.session_cache_path, 'programmer_msg.json')}")
         print(f"Conversation saved in {os.path.join(self.session_cache_path, 'inspector_msg.json')}")
+        with open(os.path.join(self.session_cache_path, 'config.json'), 'w') as f:
+            config = {
+            "config": self.config,
+            "model": self.model,
+            "session_cache_path": self.session_cache_path,
+            "chat_history_display": self.chat_history_display,
+            "retrieval": self.retrieval,
+            "max_attempts": self.max_attempts,
+            "error_count": self.error_count,
+            "repair_count": self.repair_count,
+            "file_list": [str(p) for p in self.file_list],
+            "figure_list": [str(p) for p in self.figure_list],
+            "function_repository": self.function_repository,
+        }
+            json.dump(config, f, indent=4)
+        print(f"Config saved in {os.path.join(self.session_cache_path, 'config.json')}")
 
     def add_programmer_msg(self, message: dict):
         self.programmer.messages.append(message)
@@ -118,9 +135,10 @@ class Conversation:
         for item in chat_history:
             formatted_chat.append({"role": "user", "content": item[0]})
             formatted_chat.append({"role": "assistant", "content": item[1]})
-        report_pmt = Academic_Report.replace('s{figures}',
-                                             str(self.figure_list)) + '\nNow, you should generate a report according to the following chat history:\n' # todo: figure_list should use global address.
-        self.messages = [{"role": "user", "content": report_pmt}] + formatted_chat
+        # report_pmt = Academic_Report.replace('{figures}',
+        #                                      str(self.figure_list)) + '\nNow, you should generate a report according to the following chat history:\n' # todo: figure_list should use global address.
+        # self.messages = [{"role": "system", "content": report_pmt}] + formatted_chat
+        self.messages = [{"role": "system", "content": Basic_Report}] + formatted_chat + [{"role": "user", "content": f"Now, you should generate a report according to the above chat history (Do not give further suggestions at the end of report).\nNote: Here is figure list with links in the chat history: {self.figure_list}"}]
         report = self.call_chat_model().choices[0].message.content
         self.messages.append({"role": "assistant", "content": report})
         mkd_path = os.path.join(self.session_cache_path, 'report.md')

@@ -13,9 +13,12 @@ class LAMBDA:
         print("Load config: ", config_path)
         with open(config_path, 'r') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
-        self.session_cache_path = to_absolute_path(self.init_local_cache_path(self.config["project_cache_path"]))
+        if self.config["load_chat"] == True:
+            self.load_dialogue(self.config["chat_history_path"])
+        else:
+            self.session_cache_path = to_absolute_path(self.init_local_cache_path(self.config["project_cache_path"]))
+            self.config["session_cache_path"] = self.session_cache_path
         print("Session cache path: ", self.session_cache_path)
-        self.config["session_cache_path"] = self.session_cache_path
         self.conv = Conversation(self.config)
 
         self.conv.programmer.messages = [
@@ -81,10 +84,17 @@ class LAMBDA:
             json.dump(chat_history, f, indent=4)
         print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'system_dialogue.json')}.")
 
-    def load_dialogue(self, dialogue):
-        with open(dialogue, 'r') as f:
+    def load_dialogue(self, dialogue_path):
+        system_dialogue_path = os.path.join(dialogue_path, 'system_dialogue.json')
+        system_config_path = os.path.join(dialogue_path, 'config.json')
+        with open(system_dialogue_path, 'r') as f:
             chat_history = json.load(f)
-        self.conv.chat_history_display = chat_history
+        with open(system_config_path, 'r') as f:
+            sys_config = json.load(f)
+        self.session_cache_path = sys_config["session_cache_path"]
+        self.config["session_cache_path"] = self.session_cache_path
+        self.config["chat_history_display"] = chat_history
+        self.config["figure_list"] = sys_config["figure_list"]
         return chat_history
 
     def clear_all(self, message, chat_history):

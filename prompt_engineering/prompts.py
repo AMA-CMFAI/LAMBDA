@@ -79,7 +79,88 @@ The code you modified (should be wrapped in ```python```):
 
 HUMAN_LOOP = "I write or repair the code for you:\n```python\n{code}\n```"
 
-Academic_Report = """You need to write a academic report in markdown format based on what is within the dialog history. The report needs to contain the following (if present):
+
+Basic_Report = '''You are a report writer. You need to write an academic data analysis report in markdown format based on what is within the dialog history. The report needs to contain the following (if present):
+1. Title: The title of the report.
+2. Abstract: Includes the background of the task, what datasets were used, data processing methods, what models were used, what conclusions were drawn, etc. It should be around 200 words.
+3. Introduction: give the background to the task and the dataset, around 200 words.
+4. Methodology: this section can be expanded according to the following subtitle. There is no limit to the number of words.
+    (4.1) Dataset: introduce the dataset, include statistical description, characteristics and features of the dataset, the target, variable types, missing values and so on.
+    (4.2) Data Processing: Includes all the steps taken by the user to process the dataset, what methods were used to process the dataset, and you can show 5 rows of data after processing. 
+          Note: If any figure saved, you should include them in the document as well, use the link in the chat history, for example:
+          ![figure.png](/path/to/the/figure.png).
+    (4.3) Modeling: Includes all the models trained by the user, you can add some introduction to the algorithm of the model.
+5. Results: This part is presented in tables as much as possible, containing all model evaluation metrics summarized in one table for comparison. There is no limit to the number of words.
+6. conclusion: summarize this report, around 200 words.
+Here is an example for you:
+
+# Classification Task Using Wine Dataset with Machine Learning Models
+
+## 1. Abstract:
+
+This report outlines the process of building and evaluating multiple machine learning models for a classification task on the Wine dataset. The dataset was preprocessed by standardizing the features and ordinal encoding the target variable, "class." Various classification models were trained, including Logistic Regression, SVM, Decision Tree, Random Forest, Neural Networks, and ensemble methods like Bagging and XGBoost. Cross-validation and GridSearchCV were employed to optimize the hyperparameters of each model. Logistic Regression achieved an accuracy of 98.89%, while the best-performing models included Random Forest and SVM. The models' performances are compared, and their strengths are discussed, demonstrating the effectiveness of ensemble methods and support vector machines for this task.
+
+## 2. Introduction
+
+The task at hand is to perform a classification on the Wine dataset, a well-known dataset that contains attributes related to different types of wine. The goal is to correctly classify the wine type (target variable: "class") based on its chemical properties such as alcohol content, phenols, color intensity, etc. Machine learning models are ideal for this kind of task, as they can learn patterns from the data to make accurate predictions. This report details the preprocessing steps applied to the data, including standardization and ordinal encoding. It also discusses various machine learning models such as Logistic Regression, Decision Tree, SVM, and ensemble models, which were trained and evaluated using cross-validation. Additionally, GridSearchCV was employed to fine-tune model parameters to achieve optimal accuracy.
+
+## 3. Methodology:
+
+**3.1 Dataset:**
+The Wine dataset used in this task contains 13 continuous features representing various chemical properties of wine, such as Alcohol, Malic acid, Ash, Magnesium, and Proline. The target variable, "class," is categorical and has three possible values, each corresponding to a different type of wine. A correlation matrix was generated to understand the relationships between the features, and standardization was applied to normalize the values. The dataset had no missing values.
+
+**3.2 Data Processing:**
+
+- Standardization: The features were standardized using `StandardScaler`, which adjusts the mean and variance of each feature to make them comparable.
+- Ordinal Encoding: The target column, "class," was converted into numerical values using `OrdinalEncoder`.
+
+|      | Alcohol  | Malicacid | Ash  | Alcalinity_of_ash | Magnesium | Total_phenols | Flavanoids | Nonflavanoid_phenols | Proanthocyanins | Color_intensity | Hue  | 0D280_0D315_of_diluted_wines | Proline | class |
+| ---- | -------- | --------- | ---- | ----------------- | --------- | ------------- | ---------- | -------------------- | --------------- | --------------- | ---- | ---------------------------- | ------- | ----- |
+| 0    | 1.518613 | -0.562250 | 0.23 | -1.169593         | 1.913905  | 0.808997      | 1.034819   | -0.659563            | 1.224884        | 0.251717        | 0.36 | 1.847920                     | 1.013   | 0     |
+
+For visualization, a correlation matrix was generated to show how different features correlate with each other and with the target:
+
+![sepal_length_distribution.png](/path/to/the/figure.png)
+
+**3.3 Modeling:**
+Several machine learning models were trained on the processed dataset using cross-validation for evaluation. The models include:
+
+- **Logistic Regression**: A linear model suitable for binary and multiclass classification tasks.
+- **SVM (Support Vector Machine)**: Known for handling high-dimensional data and effective in non-linear classifications when using different kernels.
+- **Neural Network (MLPClassifier)**: A neural network model was tested with varying hidden layer sizes.
+- **Decision Tree**: A highly interpretable model that splits the dataset recursively based on feature values.
+- **Random Forest**: An ensemble of decision trees that reduces overfitting by averaging predictions from multiple trees.
+- **Bagging**: An ensemble method to train multiple classifiers on different subsets of the dataset.
+- **Gradient Boosting**: A sequential model that builds trees to correct previous errors, improving accuracy with each iteration.
+- **XGBoost**: A gradient boosting technique optimized for performance and speed
+- **AdaBoost**: An ensemble method that boosts weak classifiers by focusing more on incorrectly classified instances.
+
+Each model's hyperparameters were optimized using `GridSearchCV`, and evaluation metrics such as accuracy were recorded.
+
+## 4. Results:
+
+The results of model evaluation are summarized below:
+
+| Model               | Best Parameters                                              | Accuracy |
+| ------------------- | ------------------------------------------------------------ | -------- |
+| Logistic Regression | Default                                                      | 0.9889   |
+| SVM                 | {'C': 10, 'gamma': 'scale', 'kernel': 'rbf'}                 | 0.9889   |
+| Neural Network      | {'activation': 'tanh', 'alpha': 0.001, 'hidden_layer_sizes': (3, 4, 3)} | 0.8260   |
+| Decision Tree       | {'criterion': 'entropy', 'max_depth': None, 'min_samples_split': 2} | 0.9214   |
+| Random Forest       | {'max_depth': None, 'min_samples_split': 5, 'n_estimators': 500} | 0.9833   |
+| Bagging             | {'bootstrap': True, 'max_samples': 0.5, 'n_estimators': 100} | 0.9665   |
+| GradientBoost       | {'learning_rate': 1.0, 'max_depth': 3, 'n_estimators': 100}  | 0.9665   |
+| XGBoost             | {'learning_rate': 0.1, 'max_depth': 3, 'n_estimators': 100}  | 0.9554   |
+| AdaBoost            | {'algorithm': 'SAMME', 'learning_rate': 1.0, 'n_estimators': 10} | 0.9389   |
+
+## 5. Conclusion:
+
+This report presents the steps and results of performing a classification task using various machine learning models on the Wine dataset. Logistic Regression and SVM yielded the highest accuracies, with scores of 0.9889, demonstrating their effectiveness for this dataset. Random Forest also performed well, showcasing the strength of ensemble models. Neural Networks, while versatile, achieved a lower accuracy of 0.8260, indicating the need for further tuning. Overall, the results suggest that SVM and Logistic Regression are suitable choices for this task, but additional models like Random Forest offer competitive performance.
+'''
+
+
+
+Academic_Report = """You need to write an academic data analysis report in markdown format based on what is within the dialog history. The report needs to contain the following (if present):
 1. Title: The title of the report.
 2. Abstract: Includes the background of the task, what datasets were used, data processing methods, what models were used, what conclusions were drawn, etc. It should be around 200 words.
 3. Introduction: give the background to the task and the dataset, around 200 words.
@@ -120,7 +201,7 @@ The Wine dataset used in this task contains 13 continuous features representing 
 
 For visualization, a correlation matrix was generated to show how different features correlate with each other and with the target:
 
-![sepal_length_distribution.png](https://llm-for-data-science.oss-cn-hongkong.aliyuncs.com/user_tmp/a83d8d2e-176b-4f3d-bace-c7a070b5e9eb-2024-05-14/sepal_length_width_scatter.png?Expires=1715624588&OSSAccessKeyId=TMP.3KhBhD7TRpHnnhBsC4Rma2Jb9a5YW2cuHLMxx196zasEDBQcm3MtQq8k8Q7D6WifmqvrmEZV7ML2AusEnqnfxqgfzRucX1&Signature=fxmjQ2zugud8IENAlyclQU9CkzE%3D)
+![sepal_length_distribution.png](/path/to/the/figure.png)
 
 **3.3 Modeling:**
 Several machine learning models were trained on the processed dataset using cross-validation for evaluation. The models include:
@@ -159,7 +240,7 @@ This report presents the steps and results of performing a classification task u
 """
 
 Experiment_Report = '''
-You are a report writer. You need to write an experimental report in markdown format based on what is within the dialog history. The report needs to contain the following (if present):
+You are a report writer. You need to write an data analysis experimental report in markdown format based on what is within the dialog history. The report needs to contain the following (if present):
 1. Title: The title of the report.
 2. Experiment Process: Includes all the useful processes of the task, You should give the following information for every step:
  (1) The purpose of the process
