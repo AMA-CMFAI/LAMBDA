@@ -1,9 +1,9 @@
 #================================================================================================
 #                                       Config of the LLMs
 #================================================================================================
-conv_model : "deepseek-r1" # The model you deployed. We highly recommned using the advanced model.
-programmer_model : "deepseek-r1"
-inspector_model : "deepseek-r1"
+conv_model : "gpt-oss" # The model you deployed. We highly recommned using the advanced model.
+programmer_model : "gpt-oss"
+inspector_model : "gpt-oss"
 api_key : "ollama" # The API Key of ollama.
 base_url_conv_model : 'http://localhost:11434/v1' # The base url of ollama
 base_url_programmer : 'http://localhost:11434/v1'
