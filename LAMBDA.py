@@ -31,6 +31,7 @@ class LAMBDA:
         if self.conv.retrieval:
             self.conv.programmer.messages[0]["content"] += KNOWLEDGE_INTEGRATION_SYSTEM
 
+
     def init_local_cache_path(self, project_cache_path):
         current_fold = time.strftime('%Y-%m-%d', time.localtime())
         hsid = str(hash(id(self)))  # new_uuid = str(uuid.uuid4())
@@ -85,18 +86,38 @@ class LAMBDA:
         print(f"Dialogue saved in {os.path.join(self.session_cache_path, 'system_dialogue.json')}.")
 
     def load_dialogue(self, dialogue_path):
-        system_dialogue_path = os.path.join(dialogue_path, 'system_dialogue.json')
-        system_config_path = os.path.join(dialogue_path, 'config.json')
-        with open(system_dialogue_path, 'r') as f:
-            chat_history = json.load(f)
-        with open(system_config_path, 'r') as f:
-            sys_config = json.load(f)
-        self.session_cache_path = sys_config["session_cache_path"]
-        self.config["session_cache_path"] = self.session_cache_path
-        self.config["chat_history_display"] = chat_history
-        self.config["figure_list"] = sys_config["figure_list"]
-        return chat_history
+        try:
+            system_dialogue_path = os.path.join(dialogue_path, 'system_dialogue.json')
+            system_config_path = os.path.join(dialogue_path, 'config.json')
+            with open(system_dialogue_path, 'r') as f:
+                chat_history = json.load(f)
+            with open(system_config_path, 'r') as f:
+                sys_config = json.load(f)
+            self.session_cache_path = sys_config["session_cache_path"]
+            self.config["session_cache_path"] = self.session_cache_path
+            self.config["chat_history_display"] = chat_history
+            self.config["figure_list"] = sys_config["figure_list"]
+            return chat_history
+        except Exception as e:
+            print(f"Failed to load the chat history: {e}")
+            return [[]]
 
     def clear_all(self, message, chat_history):
         self.conv.clear()
         return "", []
+
+    def update_config(self, conv_model, programmer_model, inspector_model, api_key,
+                      base_url_conv_model, base_url_programmer, base_url_inspector,
+                      max_attempts, max_exe_time,
+                      load_chat, chat_history_path):
+
+        self.conv.update_config(conv_model=conv_model, programmer_model=programmer_model, inspector_model=inspector_model, api_key=api_key,
+                      base_url_conv_model=base_url_conv_model, base_url_programmer=base_url_programmer, base_url_inspector=base_url_inspector,
+                      max_attempts=max_attempts, max_exe_time=max_exe_time)
+
+        if load_chat == True:
+            self.config['chat_history_path'] = chat_history_path
+            self.load_dialogue(chat_history_path)
+        self.config['load_chat'] = load_chat
+
+        return ["Config Updated!", self.config["chat_history_display"]]

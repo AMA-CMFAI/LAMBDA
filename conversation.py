@@ -18,7 +18,7 @@ from utils.utils import *
 class Conversation:
 
     def __init__(self, config) -> None:
-        self.config = config
+        self.config = config    
         self.client = openai.OpenAI(api_key=config['api_key'], base_url=config['base_url_conv_model'])
         self.model = config['conv_model']
         self.programmer = Programmer(api_key=config['api_key'], model=config['programmer_model'],
@@ -38,7 +38,6 @@ class Conversation:
         self.my_data_cache = None
         # self.oss_dir = None
         self.run_code(IMPORT)
-
 
 
     def add_functions(self, function_lib: dict) -> None:
@@ -135,9 +134,6 @@ class Conversation:
         for item in chat_history:
             formatted_chat.append({"role": "user", "content": item[0]})
             formatted_chat.append({"role": "assistant", "content": item[1]})
-        # report_pmt = Academic_Report.replace('{figures}',
-        #                                      str(self.figure_list)) + '\nNow, you should generate a report according to the following chat history:\n' # todo: figure_list should use global address.
-        # self.messages = [{"role": "system", "content": report_pmt}] + formatted_chat
         self.messages = [{"role": "system", "content": Basic_Report}] + formatted_chat + [{"role": "user", "content": f"Now, you should generate a report according to the above chat history (Do not give further suggestions at the end of report).\nNote: Here is figure list with links in the chat history: {self.figure_list}"}]
         report = self.call_chat_model().choices[0].message.content
         self.messages.append({"role": "assistant", "content": report})
@@ -266,3 +262,33 @@ class Conversation:
         self.add_programmer_msg({"role": "assistant", "content": prog_response})
         chat_history_display[-1][1] = display_suggestions(prog_response, chat_history_display[-1][1])
         yield chat_history_display
+
+    
+    def update_config(self, conv_model, programmer_model, inspector_model, api_key,
+                      base_url_conv_model, base_url_programmer, base_url_inspector,
+                      max_attempts, max_exe_time):
+
+        if self.config['api_key'] != api_key:
+            self.config['api_key'] = api_key
+            self.client = openai.OpenAI(api_key=api_key, base_url=base_url_conv_model)
+            self.programmer.client = openai.OpenAI(api_key=api_key, base_url=base_url_programmer)
+            self.inspector.client = openai.OpenAI(api_key=api_key, base_url=base_url_inspector)
+
+        if self.model != conv_model:
+            self.model = conv_model
+            self.config['conv_model'] = conv_model
+
+        if self.kernel.max_exe_time != max_exe_time:
+            self.kernel.max_exe_time = max_exe_time
+            self.config['max_exe_time'] = max_exe_time
+
+        if self.programmer.model != programmer_model:
+            self.programmer.model = programmer_model
+            self.config['programmer_model'] = programmer_model
+
+        if self.inspector.model != inspector_model:
+            self.inspector.model = inspector_model
+            self.config['inspector_model'] = inspector_model
+
+        if self.max_attempts != max_attempts:
+            self.config['max_attempts'] = max_attempts
