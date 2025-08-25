@@ -45,7 +45,7 @@ conda activate lambda
 
 Then, install the required packages:
 ```bash
-pip install -r requirements_bak.txt
+pip install -r requirements.txt
 ```
 
 Next, you should install the Jupyter kernel to create a local Code Interpreter:
