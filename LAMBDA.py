@@ -100,7 +100,7 @@ class LAMBDA:
             return chat_history
         except Exception as e:
             print(f"Failed to load the chat history: {e}")
-            return [[]]
+            return []
 
     def clear_all(self, message, chat_history):
         self.conv.clear()
@@ -117,7 +117,8 @@ class LAMBDA:
 
         if load_chat == True:
             self.config['chat_history_path'] = chat_history_path
-            self.load_dialogue(chat_history_path)
-        self.config['load_chat'] = load_chat
+            chat_history = self.load_dialogue(chat_history_path)
+            self.config['load_chat'] = load_chat
+            return ["### Config Updated!", chat_history]
 
-        return ["Config Updated!", self.config["chat_history_display"]]
+        return "### Config Updated!", []
