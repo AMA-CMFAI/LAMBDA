@@ -1,4 +1,4 @@
-gradio==4.44.0
+gradio==4.44.1
 ipykernel==6.29.5
 ipython==8.27.0
 jupyter_client==8.6.2
@@ -9,6 +9,7 @@ torch==2.4.1
 transformers==4.44.2
 PyYAML==6.0.1
 ansi2html==1.9.2
-sentence_transformers==3.0.1
+sentence_transformers==5.1.0
 nbformat==5.10.4
 pydantic==2.9.1
+scikit-learn==1.5.1
