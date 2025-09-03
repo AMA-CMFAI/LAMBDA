@@ -14,4 +14,8 @@ example_config.yaml
 local.yaml
 front_end/css.css
 front_end/javascript.js
-pages
+pages/
+dist/
+build/
+lambda_app.spec
+lambda_logo.icns

@@ -36,7 +36,6 @@ class Conversation:
         self.figure_list = config["figure_list"] if "figure_list" in config else []
         self.function_repository = {}
         self.my_data_cache = None
-        # self.oss_dir = None
         self.run_code(IMPORT)
 
 

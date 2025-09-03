@@ -1,6 +1,5 @@
 import queue
 import re
-# import streamlit as st
 import base64
 from io import BytesIO
 import re
@@ -14,6 +13,7 @@ import nbformat
 from nbformat import v4 as nbf
 import time
 import ansi2html
+from utils.utils import check_install_kernel
 
 IPYKERNEL = os.environ.get('IPYKERNEL', 'lambda')
 
@@ -49,10 +49,26 @@ class CodeKernel(object):
         else:
             env = {"PATH": self.python_path + ":$PATH", "PYTHONPATH": self.python_path}
 
-        self.kernel_manager = jupyter_client.KernelManager(kernel_name=IPYKERNEL,
-                                                           connection_file=self.kernel_config_path,
-                                                           exec_files=[self.init_file_path],
-                                                           env=env)
+        check_install_kernel('lambda')
+
+        self.kernel_manager = jupyter_client.KernelManager(
+            kernel_name=IPYKERNEL,
+            connection_file=self.kernel_config_path,
+            exec_files=[self.init_file_path],
+            env=env)
+
+        # if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        #     self.kernel_manager = jupyter_client.KernelManager(
+        #         connection_file=self.kernel_config_path,
+        #         exec_files=[self.init_file_path],
+        #         env=env)
+        # else:
+        #     self.kernel_manager = jupyter_client.KernelManager(
+        #         kernel_name=IPYKERNEL,
+        #         connection_file=self.kernel_config_path,
+        #         exec_files=[self.init_file_path],
+        #         env=env)
+
         if self.kernel_config_path:
             self.kernel_manager.load_connection_file()
             self.kernel_manager.start_kernel(stdout=PIPE, stderr=PIPE)
@@ -353,7 +369,7 @@ if __name__ == '__main__':
     plt.show()
     """
 
-    file_code = """ 
+    file_code = """
     text_content = "This is file test."
     with open('example.txt', 'w', encoding='utf-8') as file:
         file.write(text_content)
@@ -371,4 +387,3 @@ if __name__ == '__main__':
         msg = execute(i, kernel)
         print(msg)
     kernel.write_to_notebook("./cache/cache_test/my_notebook2.ipynb")
-

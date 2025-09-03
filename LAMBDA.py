@@ -6,17 +6,26 @@ from conversation import Conversation
 from prompt_engineering.prompts import *
 import yaml
 from utils.utils import *
+import sys
+import os
 
 
 class LAMBDA:
     def __init__(self, config_path='config.yaml'):
-        print("Load config: ", config_path)
+        print("Try to load config: ", config_path)
+
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            bundle_dir = os.path.dirname(sys.executable)
+        else:
+            bundle_dir = os.path.dirname(os.path.abspath(__file__))
+        config_path = os.path.join(bundle_dir, config_path)
+
         with open(config_path, 'r') as f:
             self.config = yaml.load(f, Loader=yaml.FullLoader)
         if self.config["load_chat"] == True:
             self.load_dialogue(self.config["chat_history_path"])
         else:
-            self.session_cache_path = to_absolute_path(self.init_local_cache_path(self.config["project_cache_path"]))
+            self.session_cache_path = self.init_local_cache_path(to_absolute_path(self.config["project_cache_path"]))
             self.config["session_cache_path"] = self.session_cache_path
         print("Session cache path: ", self.session_cache_path)
         self.conv = Conversation(self.config)

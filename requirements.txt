@@ -1,7 +1,7 @@
 gradio==4.44.1
 ipykernel==6.29.5
 ipython==8.27.0
-jupyter_client==8.6.2
+jupyter_client==7.4.9
 openai==1.93.0
 pandas==2.2.2
 pillow==10.4.0
@@ -13,3 +13,4 @@ sentence_transformers==5.1.0
 nbformat==5.10.4
 pydantic==2.9.1
 scikit-learn==1.5.1
+statsmodels==0.14.4
