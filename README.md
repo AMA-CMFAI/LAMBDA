@@ -1,7 +1,13 @@
+<div align="center">
+  
 # LAMBDA - Multi-Agent Data Analysis System
 [![Docs](https://img.shields.io/badge/Docs-Online-blue)](https://ama-cmfai.github.io/LAMBDA-Docs/#/)
 [![Project](https://img.shields.io/badge/Project-Webpage-brightgreen)](https://www.polyu.edu.hk/ama/cmfai/lambda.html)
 [![Paper](https://img.shields.io/badge/Paper-arXiv-red)](https://arxiv.org/pdf/2407.17535)
+[![MacOS](https://img.shields.io/badge/Download-macOS-black?logo=apple)](https://github.com/AMA-CMFAI/LAMBDA/releases/download/app/LAMBDA-MacOS-beta-v0.0.2.zip)
+[![Windows](https://img.shields.io/badge/Download-Windows-blue?logo=windows)](https://github.com/AMA-CMFAI/LAMBDA/releases/download/app/LAMBDA-Windows-beta-v0.0.2.zip)
+
+</div>
 
 <body>
 <!-- <img src="https://github.com/user-attachments/assets/df454158-79e4-4da4-ae03-eb687fe02f16" style="width: 80%"> -->
@@ -16,8 +22,8 @@
 We introduce **LAMBDA**, a novel open-source, code-free multi-agent data analysis system that harnesses the power of large models. LAMBDA is designed to address data analysis challenges in complex data-driven applications through the use of innovatively designed data agents that operate iteratively and generatively using natural language.
 
 ## News
+- LAMBDA App for for macOS and Windows has been released. Details cloud be found in [Released](https://github.com/AMA-CMFAI/LAMBDA/releases/tag/app)
 - [Docs site](https://ama-cmfai.github.io/LAMBDA-Docs/#/) is available!
-- We are recruiting engineers and research assistants with experience in AI Agent development.
 
 ## Key Features
 
