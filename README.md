@@ -134,7 +134,7 @@ Thank the contributors and the communities for their support and feedback.
 
 ```bash
 @article{sun2024lambda,
-        author = {Sun Maojun and Ruijian Han and Binyan Jiang and Houduo Qi and Defeng Sun and Yancheng Yuan and Jian Huang and},
+        author = {Maojun Sun and Ruijian Han and Binyan Jiang and Houduo Qi and Defeng Sun and Yancheng Yuan and Jian Huang and},
         title = {LAMBDA: A Large Model Based Data Agent},
         journal = {Journal of the American Statistical Association},
         volume = {0},
