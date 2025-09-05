@@ -1,6 +1,6 @@
 <div align="center">
   
-# LAMBDA - Multi-Agent Data Analysis System
+# LAMBDA - LArge Model-based Data Analysis System
 [![Docs](https://img.shields.io/badge/Docs-Online-blue)](https://ama-cmfai.github.io/LAMBDA-Docs/#/)
 [![Project](https://img.shields.io/badge/Project-Webpage-brightgreen)](https://www.polyu.edu.hk/ama/cmfai/lambda.html)
 [![Paper](https://img.shields.io/badge/Paper-arXiv-red)](https://arxiv.org/pdf/2407.17535)
@@ -163,5 +163,5 @@ Thank the contributors and the communities for their support and feedback.
 ```
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=Stephen-SMJ/LAMBDA&type=Timeline)](https://star-history.com/#Stephen-SMJ/LAMBDA&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=AMA-CMFAI/LAMBDA&type=Date)](https://www.star-history.com/#AMA-CMFAI/LAMBDA&Date)
 </body>
