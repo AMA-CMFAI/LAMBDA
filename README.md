@@ -22,7 +22,7 @@
 We introduce **LAMBDA**, a novel open-source, code-free multi-agent data analysis system that harnesses the power of large models. LAMBDA is designed to address data analysis challenges in complex data-driven applications through the use of innovatively designed data agents that operate iteratively and generatively using natural language.
 
 ## News
-- LAMBDA App for for macOS and Windows has been released. Details cloud be found in [Released](https://github.com/AMA-CMFAI/LAMBDA/releases/tag/app)
+- LAMBDA App for macOS and Windows has been released. Details can be found in [Released](https://github.com/AMA-CMFAI/LAMBDA/releases/tag/app). (Hint: There are some problems with the kernel installation in the APP. You should run `ipython kernel install --name lambda --user` to install the kernel in advance.)
 - [Docs site](https://ama-cmfai.github.io/LAMBDA-Docs/#/) is available!
 
 ## Key Features
