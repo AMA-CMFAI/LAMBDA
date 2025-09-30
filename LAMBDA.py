@@ -12,6 +12,7 @@ import os
 
 class LAMBDA:
     def __init__(self, config_path='config.yaml'):
+        ensure_config_file("config.yaml")
         print("Try to load config: ", config_path)
 
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):

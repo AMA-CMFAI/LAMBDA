@@ -165,7 +165,8 @@ class Conversation:
 
 
     def clear(self):
-        os.removedirs(self.session_cache_path)
+        # os.removedirs(self.session_cache_path)
+        clear_working_path(self.session_cache_path)
         self.messages = []
         self.programmer.clear()
         self.inspector.clear()

@@ -40,6 +40,7 @@ exe = EXE(
     entitlements_file=None,
     icon='lambda_logo.icns',
 )
+
 coll = COLLECT(
     exe,
     a.binaries,
@@ -48,4 +49,10 @@ coll = COLLECT(
     upx=True,
     upx_exclude=[],
     name='lambda_app',
+)
+
+app = BUNDLE(
+    coll,
+    name='lambda_app.app',
+    icon='lambda_logo.icns',
 )

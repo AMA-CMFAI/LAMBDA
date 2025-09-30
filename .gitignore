@@ -17,5 +17,4 @@ front_end/javascript.js
 pages/
 dist/
 build/
-lambda_app.spec
-lambda_logo.icns
+app_compile/
