@@ -139,26 +139,22 @@ Thank the contributors and the communities for their support and feedback.
 
 
 ```bash
-@article{sun2024lambda,
-        author = {Maojun Sun and Ruijian Han and Binyan Jiang and Houduo Qi and Defeng Sun and Yancheng Yuan and Jian Huang and},
-        title = {LAMBDA: A Large Model Based Data Agent},
-        journal = {Journal of the American Statistical Association},
-        volume = {0},
-        number = {ja},
-        pages = {1--20},
-        year = {2025},
-        publisher = {ASA Website},
-        doi = {10.1080/01621459.2025.2510000},
-        URL = {https://doi.org/10.1080/01621459.2025.2510000},
-        eprint = {https://doi.org/10.1080/01621459.2025.2510000}
-
+@article{sun2025lambda,
+  title={Lambda: A large model based data agent},
+  author={Sun, Maojun and Han, Ruijian and Jiang, Binyan and Qi, Houduo and Sun, Defeng and Yuan, Yancheng and Huang, Jian},
+  journal={Journal of the American Statistical Association},
+  pages={1--13},
+  year={2025},
+  publisher={Taylor \& Francis}
 }
 
-@article{sun2024survey,
-  title={A Survey on Large Language Model-based Agents for Statistics and Data Science},
+@article{sun2025survey,
+  title={A survey on large language model-based agents for statistics and data science},
   author={Sun, Maojun and Han, Ruijian and Jiang, Binyan and Qi, Houduo and Sun, Defeng and Yuan, Yancheng and Huang, Jian},
-  journal={arXiv preprint arXiv:2412.14222},
-  year={2024}
+  journal={The American Statistician},
+  pages={1--14},
+  year={2025},
+  publisher={Taylor \& Francis}
 }
 ```
 ## Star History
