@@ -13,7 +13,7 @@ def launch_app():
             chatbot = gr.Chatbot(value=Lambda.conv.chat_history_display, height=600, label="LAMBDA", show_copy_button=True, type="tuples")
             with gr.Group():
                 with gr.Row(equal_height=True):
-                    upload_btn = gr.UploadButton(label="Upload Data", file_types=["csv", "xlsx"], scale=1)
+                    upload_btn = gr.UploadButton(label="Upload Data", scale=1)
                     msg = gr.Textbox(show_label=False, placeholder="Sent message to LLM", scale=6, elem_id="chatbot_input")
                     submit = gr.Button("Submit", scale=1)
             with gr.Row(equal_height=True):

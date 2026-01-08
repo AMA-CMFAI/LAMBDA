@@ -8,7 +8,14 @@ class data_cache:
     def __init__(self, file_path) -> None:
         self.file_path = file_path
         self.data_cache_path = os.path.dirname(file_path)
-        self.data = pd.read_csv(self.file_path, encoding='utf-8')
+        file_extension = os.path.splitext(file_path)[1].lower()
+
+        if file_extension == '.csv':
+            self.data = pd.read_csv(self.file_path, encoding='utf-8')
+        elif file_extension in ['.xlsx', '.xls']:
+            self.data = pd.read_excel(self.file_path)
+        else:
+            raise ValueError(f"Unsupported file format: {file_extension}")
         self.general_info = {}
 
     def get_description(self) -> dict:

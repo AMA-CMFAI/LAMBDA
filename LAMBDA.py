@@ -57,12 +57,19 @@ class LAMBDA:
         file_path = files.name
         shutil.copy(file_path, self.session_cache_path)
         filename = os.path.basename(file_path)
-        self.conv.add_data(file_path)
+        file_extension = os.path.splitext(file_path)[1].lower()
         self.conv.file_list.append(filename)
         local_cache_path = os.path.join(self.session_cache_path, filename)
-        gen_info = self.conv.my_data_cache.get_description()
-        self.conv.programmer.messages[0][
-            "content"] += f"\nNow, user uploads the data in {local_cache_path}\n, and here is the general information of the dataset:\n {gen_info}. \nYou should care about the missing values and type of each column in your later processing."
+
+        if file_extension in ['.xlsx', '.xls']:
+            self.conv.add_data(file_path)
+            gen_info = self.conv.my_data_cache.get_description()
+            self.conv.programmer.messages[0][
+                "content"] += f"\nNow, user uploads the data in {local_cache_path}\n, and here is the general information of the dataset:\n {gen_info}. \nYou should care about the missing values and type of each column in your later processing."
+        else:
+            self.conv.programmer.messages[0][
+                "content"] += f"\nNow, user uploads the files in {local_cache_path}."
+
         print(f"Upload file in gradio path: {file_path}, local cache path: {local_cache_path}")
 
     def rendering_code(self):
