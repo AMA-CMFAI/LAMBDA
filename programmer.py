@@ -71,13 +71,17 @@ class Programmer:
             stream = self.client.chat.completions.create(**params)
             self.messages[-1]["content"] = temp
             for chunk in stream:
-                if hasattr(chunk, 'choices') and chunk.choices[0].delta.content is not None:
+                if (hasattr(chunk, 'choices') and
+                        chunk.choices and
+                        len(chunk.choices) > 0 and
+                        chunk.choices[0].delta.content is not None):
                     chunk_message = chunk.choices[0].delta.content
                     yield chunk_message
         except Exception as e:
             print(f"Error calling chat model: {e}")
             traceback.print_exc()
             return None
+
     def clear(self):
         self.messages = [
             {
@@ -86,6 +90,8 @@ class Programmer:
             }
         ]
         self.function_repository = {}
+
+
 
 
 
