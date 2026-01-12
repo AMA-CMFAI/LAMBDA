@@ -225,7 +225,7 @@ class CodeKernel(object):
 
         return shell_msg
 
-    def get_error_msg(self, msg, verbose=False) -> str | None:
+    def get_error_msg(self, msg, verbose=False):
         if msg['content']['status'] == 'error':
             try:
                 error_msg = msg['content']['traceback']
